@@ -122,11 +122,10 @@ export default function Contact() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="relative">
                   <label
-                    className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${
-                      focusedField === "name"
+                    className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${focusedField === "name"
                         ? "-top-2.5 text-[var(--accent)] bg-[var(--bg2)] px-1"
                         : "top-3.5 text-[var(--muted)]"
-                    }`}
+                      }`}
                   >
                     Name
                   </label>
@@ -141,11 +140,10 @@ export default function Contact() {
                 </div>
                 <div className="relative">
                   <label
-                    className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${
-                      focusedField === "email"
+                    className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${focusedField === "email"
                         ? "-top-2.5 text-[var(--accent)] bg-[var(--bg2)] px-1"
                         : "top-3.5 text-[var(--muted)]"
-                    }`}
+                      }`}
                   >
                     Email
                   </label>
@@ -162,11 +160,10 @@ export default function Contact() {
 
               <div className="relative">
                 <label
-                  className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${
-                    focusedField === "message"
+                  className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${focusedField === "message"
                       ? "-top-2.5 text-[var(--accent)] bg-[var(--bg2)] px-1 z-10"
                       : "top-3.5 text-[var(--muted)]"
-                  }`}
+                    }`}
                 >
                   Message
                 </label>
@@ -196,9 +193,8 @@ export default function Contact() {
       {/* Toast notification */}
       {toast.show && (
         <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl glass-card border-[var(--accent)]/30 text-sm text-[var(--text)] shadow-xl shadow-[var(--accent)]/10 inline-flex items-center gap-2 ${
-            toast.exiting ? "toast-exit" : "toast-enter"
-          }`}
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl glass-card border-[var(--accent)]/30 text-sm text-[var(--text)] shadow-xl shadow-[var(--accent)]/10 inline-flex items-center gap-2 ${toast.exiting ? "toast-exit" : "toast-enter"
+            }`}
         >
           <span className="text-lg">✨</span> Message sent! I&apos;ll get back to you soon.
         </div>
