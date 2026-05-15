@@ -7,7 +7,7 @@ import {
   useSpring,
   AnimatePresence,
 } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Sparkles } from "lucide-react";
 
 const roles = [
   "Backend Developer",
@@ -46,7 +46,7 @@ function useTypingAnimation(texts: string[], speed = 80, pause = 2200) {
   return display;
 }
 
-/* ======= Particle System ======= */
+/* ======= Enhanced Particle System — Aurora Colors ======= */
 interface Particle {
   id: number;
   x: number;
@@ -56,6 +56,7 @@ interface Particle {
   speedY: number;
   opacity: number;
   hue: number;
+  saturation: number;
 }
 
 function ParticleField() {
@@ -78,17 +79,19 @@ function ParticleField() {
     resize();
     window.addEventListener("resize", resize);
 
-    // Create particles
-    const count = Math.min(80, Math.floor(window.innerWidth / 18));
+    // Aurora-colored particles
+    const auroraHues = [263, 187, 160, 350]; // violet, cyan, emerald, rose
+    const count = Math.min(90, Math.floor(window.innerWidth / 16));
     particlesRef.current = Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      size: Math.random() * 2 + 0.5,
-      speedX: (Math.random() - 0.5) * 0.4,
-      speedY: (Math.random() - 0.5) * 0.4,
-      opacity: Math.random() * 0.5 + 0.1,
-      hue: Math.random() > 0.5 ? 256 : 190, // purple or cyan
+      size: Math.random() * 2.5 + 0.5,
+      speedX: (Math.random() - 0.5) * 0.3,
+      speedY: (Math.random() - 0.5) * 0.3,
+      opacity: Math.random() * 0.5 + 0.15,
+      hue: auroraHues[Math.floor(Math.random() * auroraHues.length)],
+      saturation: 70 + Math.random() * 20,
     }));
 
     const onMouse = (e: MouseEvent) => {
@@ -103,14 +106,14 @@ function ParticleField() {
       const particles = particlesRef.current;
 
       particles.forEach((p) => {
-        // Mouse repulsion
+        // Mouse repulsion with soft falloff
         const dx = p.x - mx;
         const dy = p.y - my;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          const force = (120 - dist) / 120;
-          p.x += (dx / dist) * force * 2;
-          p.y += (dy / dist) * force * 2;
+        if (dist < 150) {
+          const force = (150 - dist) / 150;
+          p.x += (dx / dist) * force * 1.5;
+          p.y += (dy / dist) * force * 1.5;
         }
 
         p.x += p.speedX;
@@ -122,24 +125,33 @@ function ParticleField() {
         if (p.y < 0) p.y = canvas.height;
         if (p.y > canvas.height) p.y = 0;
 
-        // Draw particle
+        // Draw particle with soft glow
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${p.hue}, 80%, 70%, ${p.opacity})`;
+        ctx.fillStyle = `hsla(${p.hue}, ${p.saturation}%, 70%, ${p.opacity})`;
         ctx.fill();
+
+        // Subtle glow around larger particles
+        if (p.size > 1.5) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${p.hue}, ${p.saturation}%, 70%, ${p.opacity * 0.08})`;
+          ctx.fill();
+        }
       });
 
-      // Draw connections
+      // Draw aurora-colored connections
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 100) {
+          if (dist < 110) {
+            const alpha = 0.06 * (1 - dist / 110);
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(131, 110, 249, ${0.08 * (1 - dist / 100)})`;
+            ctx.strokeStyle = `hsla(${particles[i].hue}, 70%, 60%, ${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -165,35 +177,82 @@ function ParticleField() {
   );
 }
 
-/* ======= Animated Code Block ======= */
+/* ======= Animated Code Block — Syntax Highlighted ======= */
 function FloatingCode() {
   const lines = useMemo(() => [
-    'const dev = "Mayur Suthar";',
-    'let passion = ["backend", "AI/ML"];',
-    "async function buildAPI() {",
-    '  const res = await fetch("/api");',
-    "  return res.json();",
-    "}",
-    "// Currently learning DevOps",
-    'docker.build("my-app");',
-    "pipeline.deploy({ env: 'prod' });",
-    "model.train(data).predict();",
+    { code: 'const ', kw: true, rest: 'dev = ', str: '"Mayur Suthar"', semi: ';' },
+    { code: 'let ', kw: true, rest: 'passion = ', str: '["backend", "AI/ML"]', semi: ';' },
+    { code: 'async function ', kw: true, rest: 'buildAPI', str: '() {', semi: '' },
+    { code: '  const ', kw: true, rest: 'res = await fetch(', str: '"/api"', semi: ');' },
+    { code: '  return ', kw: true, rest: 'res.json', str: '()', semi: ';' },
+    { code: '}', kw: false, rest: '', str: '', semi: '' },
+    { code: '// ', kw: false, rest: '', str: 'Currently learning DevOps', semi: '', comment: true },
+    { code: 'docker', kw: false, rest: '.build(', str: '"my-app"', semi: ');' },
+    { code: 'pipeline', kw: false, rest: '.deploy({ env: ', str: "'prod'", semi: ' });' },
+    { code: 'model', kw: false, rest: '.train(data).predict', str: '()', semi: ';' },
   ], []);
 
   return (
-    <div className="absolute right-[5%] top-[15%] hidden lg:block z-[2] opacity-[0.07] select-none pointer-events-none">
-      <div className="font-[family-name:var(--font-mono)] text-xs leading-6">
+    <div className="absolute right-[5%] top-[15%] hidden lg:block z-[2] opacity-[0.08] select-none pointer-events-none">
+      <div className="font-[family-name:var(--font-mono)] text-xs leading-7">
         {lines.map((line, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1.5 + i * 0.15, duration: 0.4 }}
+            transition={{ delay: 1.5 + i * 0.15, duration: 0.5 }}
           >
-            <span className="text-[var(--muted)] mr-3">{String(i + 1).padStart(2, "0")}</span>
-            <span className="text-[var(--accent)]">{line}</span>
+            <span className="text-[var(--muted)] mr-3 opacity-50">{String(i + 1).padStart(2, "0")}</span>
+            {line.comment ? (
+              <span className="text-[var(--green)] italic">{line.code}{line.str}</span>
+            ) : (
+              <>
+                <span className="text-[var(--pink)]">{line.code}</span>
+                <span className="text-[var(--text)]">{line.rest}</span>
+                <span className="text-[var(--green)]">{line.str}</span>
+                <span className="text-[var(--text)]">{line.semi}</span>
+              </>
+            )}
           </motion.div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* ======= Floating Geometric Shapes ======= */
+function FloatingShapes() {
+  return (
+    <div className="absolute inset-0 pointer-events-none z-[1] overflow-hidden">
+      {/* Triangle */}
+      <div className="absolute top-[15%] left-[8%] geo-float-1">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <polygon points="20,5 35,35 5,35" stroke="rgba(124,58,237,0.15)" strokeWidth="1" fill="none" />
+        </svg>
+      </div>
+      {/* Hexagon */}
+      <div className="absolute top-[70%] right-[12%] geo-float-2">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <polygon points="25,3 45,15 45,35 25,47 5,35 5,15" stroke="rgba(6,182,212,0.12)" strokeWidth="1" fill="none" />
+        </svg>
+      </div>
+      {/* Circle */}
+      <div className="absolute top-[40%] left-[85%] geo-float-3">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="12" stroke="rgba(52,211,153,0.1)" strokeWidth="1" fill="none" />
+        </svg>
+      </div>
+      {/* Diamond */}
+      <div className="absolute top-[80%] left-[20%] geo-float-2" style={{ animationDelay: "-8s" }}>
+        <svg width="25" height="25" viewBox="0 0 25 25" fill="none">
+          <rect x="12.5" y="1" width="16" height="16" transform="rotate(45 12.5 12.5)" stroke="rgba(251,113,133,0.1)" strokeWidth="1" fill="none" />
+        </svg>
+      </div>
+      {/* Small triangle */}
+      <div className="absolute top-[25%] right-[25%] geo-float-1" style={{ animationDelay: "-5s" }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <polygon points="10,2 18,18 2,18" stroke="rgba(251,191,36,0.1)" strokeWidth="1" fill="none" />
+        </svg>
       </div>
     </div>
   );
@@ -209,8 +268,8 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" as const } },
 };
 const scaleIn = {
-  hidden: { opacity: 0, scale: 0.8 },
-  show: { opacity: 1, scale: 1, transition: { duration: 0.6, ease: "easeOut" as const } },
+  hidden: { opacity: 0, scale: 0.85 },
+  show: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 };
 
 /* ======= Main Hero ======= */
@@ -263,15 +322,47 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden dot-grid"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      {/* Floating orbs */}
-      <div className="absolute top-[10%] left-[10%] w-72 h-72 rounded-full bg-[var(--accent)] opacity-[0.04] blur-[100px] floating-orb-1" />
-      <div className="absolute bottom-[20%] right-[15%] w-60 h-60 rounded-full bg-[var(--cyan)] opacity-[0.04] blur-[100px] floating-orb-2" />
-      <div className="absolute top-[60%] left-[60%] w-48 h-48 rounded-full bg-[var(--pink)] opacity-[0.03] blur-[100px] floating-orb-3" />
+      {/* Aurora mesh background orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute top-[-10%] left-[5%] w-[600px] h-[600px] rounded-full blur-[120px] opacity-[0.07]"
+          style={{ background: "radial-gradient(circle, #7c3aed 0%, transparent 70%)" }}
+          animate={{
+            x: [0, 50, -30, 0],
+            y: [0, -30, 40, 0],
+            scale: [1, 1.1, 0.95, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-[-5%] right-[0%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-[0.06]"
+          style={{ background: "radial-gradient(circle, #06b6d4 0%, transparent 70%)" }}
+          animate={{
+            x: [0, -40, 30, 0],
+            y: [0, 40, -20, 0],
+            scale: [1, 0.9, 1.1, 1],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute top-[50%] left-[50%] w-[400px] h-[400px] rounded-full blur-[100px] opacity-[0.04]"
+          style={{ background: "radial-gradient(circle, #34d399 0%, transparent 70%)" }}
+          animate={{
+            x: [-200, -150, -250, -200],
+            y: [-200, -250, -150, -200],
+            scale: [1, 1.05, 0.95, 1],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
 
-      {/* Purple glow */}
+      {/* Hero glow */}
       <div className="hero-glow" />
+
+      {/* Geometric shapes */}
+      <FloatingShapes />
 
       {/* Particle constellation */}
       <ParticleField />
@@ -298,14 +389,14 @@ export default function Hero() {
               transition={{ duration: 0.15 }}
             />
             <motion.div
-              className="fixed top-0 left-0 z-[9998] pointer-events-none mix-blend-difference"
+              className="fixed top-0 left-0 z-[9998] pointer-events-none"
               style={{
                 x: ringX,
                 y: ringY,
                 width: hovering ? 52 : 36,
                 height: hovering ? 52 : 36,
                 borderRadius: "50%",
-                border: "1.5px solid rgba(255,255,255,0.5)",
+                border: "1.5px solid rgba(167,139,250,0.4)",
                 translateX: "-50%",
                 translateY: "-50%",
               }}
@@ -328,13 +419,13 @@ export default function Hero() {
           className="font-[family-name:var(--font-mono)] text-sm text-[var(--cyan)] mb-6 tracking-wider"
         >
           <span className="inline-block w-2 h-2 rounded-full bg-[var(--cyan)] mr-2 pulse-dot" />
-          {"//"} hello world
+          {">"}_  hello world
         </motion.p>
 
-        {/* Name with Glitch */}
+        {/* Name with Glitch + Aurora gradient */}
         <motion.h1
           variants={scaleIn}
-          className="font-[family-name:var(--font-syne)] font-extrabold text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.05] mb-2 tracking-tight glitch-text"
+          className="font-[family-name:var(--font-syne)] font-extrabold text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] leading-[1.05] mb-2 tracking-tight glitch-text text-shimmer"
           data-text="Mayur Suthar"
         >
           Mayur Suthar
@@ -343,7 +434,11 @@ export default function Hero() {
         {/* Subtitle gradient line */}
         <motion.div
           variants={fadeUp}
-          className="mx-auto w-32 h-1 rounded-full bg-gradient-to-r from-[var(--accent)] via-[var(--cyan)] to-[var(--pink)] mb-6 mt-4"
+          className="mx-auto w-36 h-1 rounded-full mb-6 mt-4 gradient-flow"
+          style={{
+            background: "linear-gradient(90deg, var(--aurora1), var(--aurora2), var(--aurora3), var(--aurora4), var(--aurora1))",
+            backgroundSize: "200% auto",
+          }}
         />
 
         {/* Typing animation */}
@@ -352,17 +447,19 @@ export default function Hero() {
           className="h-10 flex items-center justify-center mb-6"
         >
           <span className="font-[family-name:var(--font-mono)] text-lg sm:text-xl text-[var(--muted)] typing-cursor">
+            <span className="text-[var(--accent-light)] mr-1">{">"}</span>
             {typed}
           </span>
         </motion.div>
 
-        {/* Badge */}
+        {/* Holographic Badge */}
         <motion.div variants={fadeUp} className="flex justify-center mb-10">
-          <span className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-[var(--cyan)]/25 bg-[var(--cyan)]/[0.06] text-[var(--cyan)] text-xs font-medium font-[family-name:var(--font-mono)] backdrop-blur-sm">
+          <span className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-[var(--cyan)]/20 holo-badge text-[var(--cyan)] text-xs font-medium font-[family-name:var(--font-mono)] backdrop-blur-sm">
             <span className="relative flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--cyan)] opacity-75 animate-ping" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--cyan)]" />
             </span>
+            <Sparkles size={12} className="opacity-60" />
             Currently Learning DevOps
           </span>
         </motion.div>
@@ -374,17 +471,24 @@ export default function Hero() {
         >
           <motion.a
             href="#projects"
-            whileHover={{ scale: 1.04, boxShadow: "0 0 30px rgba(131,110,249,0.3)" }}
+            whileHover={{ scale: 1.04, boxShadow: "0 0 40px rgba(124,58,237,0.3), 0 0 80px rgba(6,182,212,0.1)" }}
             whileTap={{ scale: 0.97 }}
-            className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[#6c5ce7] text-white font-semibold text-sm btn-glow transition-all"
+            className="px-8 py-3.5 rounded-2xl text-white font-semibold text-sm btn-glow transition-all gradient-flow"
+            style={{
+              background: "linear-gradient(135deg, var(--aurora1), #6c5ce7, var(--aurora2))",
+              backgroundSize: "200% 200%",
+            }}
           >
-            See My Work
+            <span className="flex items-center gap-2">
+              <Sparkles size={14} />
+              See My Work
+            </span>
           </motion.a>
           <motion.a
             href="#contact"
-            whileHover={{ scale: 1.04, borderColor: "rgba(131,110,249,0.5)" }}
+            whileHover={{ scale: 1.04, borderColor: "rgba(124,58,237,0.4)" }}
             whileTap={{ scale: 0.97 }}
-            className="px-8 py-3.5 rounded-xl border border-[var(--border)] text-[var(--text)] font-semibold text-sm hover:text-[var(--accent)] transition-all backdrop-blur-sm"
+            className="px-8 py-3.5 rounded-2xl border border-[var(--border)] text-[var(--text)] font-semibold text-sm hover:text-[var(--accent-light)] transition-all backdrop-blur-md bg-[var(--surface)]/30"
           >
             Contact Me
           </motion.a>

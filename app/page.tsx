@@ -22,6 +22,15 @@ function ScrollProgress() {
   );
 }
 
+function AuroraMeshBackground() {
+  return (
+    <>
+      <div className="aurora-mesh" />
+      <div className="aurora-orb-3" />
+    </>
+  );
+}
+
 function MouseSpotlight() {
   const spotlightRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(true);
@@ -53,6 +62,7 @@ function MouseSpotlight() {
 export default function Home() {
   return (
     <>
+      <AuroraMeshBackground />
       <ScrollProgress />
       <MouseSpotlight />
       <Navbar />

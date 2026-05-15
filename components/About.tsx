@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Mail, Terminal } from "lucide-react";
+import { Mail, Terminal, Sparkles } from "lucide-react";
 import { SVGProps } from "react";
 
 function GithubIcon(props: SVGProps<SVGSVGElement>) {
@@ -58,68 +58,112 @@ function AnimatedCounter({ target, suffix = "" }: { target: string; suffix?: str
   return <span ref={ref}>{display}{suffix}</span>;
 }
 
-/* ===== Terminal-style Output ===== */
-function TerminalBio() {
-  const bioLines = [
-    { prompt: true, text: 'cat about_mayur.md' },
-    { prompt: false, text: '' },
-    { prompt: false, text: '# About Me' },
-    { prompt: false, text: '' },
-    { prompt: false, text: "I'm a final-year BCA student at" },
-    { prompt: false, text: '**Sardar Patel University** passionate' },
-    { prompt: false, text: 'about backend development and AI/ML.' },
-    { prompt: false, text: '' },
-    { prompt: false, text: 'I love building things that work behind' },
-    { prompt: false, text: 'the scenes — APIs, AI tools, and' },
-    { prompt: false, text: 'automation pipelines.' },
-    { prompt: false, text: '' },
-    { prompt: false, text: 'Currently expanding into **DevOps** to' },
-    { prompt: false, text: 'become a well-rounded developer.' },
-    { prompt: true, text: '█' },
+/* ===== Code Editor Mockup ===== */
+function CodeEditorBio() {
+  const codeLines = [
+    { num: 1, content: '', type: 'blank' },
+    { num: 2, content: '# About Me', type: 'heading' },
+    { num: 3, content: '', type: 'blank' },
+    { num: 4, content: "I'm a final-year BCA student at", type: 'text' },
+    { num: 5, content: 'Sardar Patel University', type: 'highlight' },
+    { num: 6, content: 'passionate about backend development', type: 'text' },
+    { num: 7, content: 'and AI/ML.', type: 'text' },
+    { num: 8, content: '', type: 'blank' },
+    { num: 9, content: 'I love building things that work', type: 'text' },
+    { num: 10, content: 'behind the scenes — APIs, AI tools,', type: 'text' },
+    { num: 11, content: 'and automation pipelines.', type: 'text' },
+    { num: 12, content: '', type: 'blank' },
+    { num: 13, content: 'Currently expanding into DevOps', type: 'highlight' },
+    { num: 14, content: 'to become a well-rounded developer.', type: 'text' },
   ];
 
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
   return (
-    <div ref={ref} className="terminal-window">
-      <div className="terminal-header">
-        <div className="terminal-dot bg-[#ff5f57]" />
-        <div className="terminal-dot bg-[#febc2e]" />
-        <div className="terminal-dot bg-[#28c840]" />
-        <span className="ml-3 text-[10px] text-[var(--muted)] font-[family-name:var(--font-mono)]">
-          mayur@dev:~/portfolio
-        </span>
+    <div ref={ref} className="rounded-2xl overflow-hidden border border-[var(--border)] bg-[var(--bg2)]/90 shadow-2xl shadow-[var(--accent)]/5">
+      {/* Editor tab bar */}
+      <div className="flex items-center border-b border-[var(--border)]">
+        <div className="flex items-center gap-2 px-4 py-3">
+          <span className="w-3 h-3 rounded-full bg-[#ff5f57]/70" />
+          <span className="w-3 h-3 rounded-full bg-[#febc2e]/70" />
+          <span className="w-3 h-3 rounded-full bg-[#28c840]/70" />
+        </div>
+        <div className="flex items-center gap-0 ml-2">
+          <div className="px-4 py-2.5 text-[11px] font-[family-name:var(--font-mono)] text-[var(--accent-light)] bg-[var(--bg)] border-b-2 border-[var(--accent)] border-r border-r-[var(--border)]">
+            about_mayur.md
+          </div>
+          <div className="px-4 py-2.5 text-[11px] font-[family-name:var(--font-mono)] text-[var(--muted)] opacity-50">
+            skills.json
+          </div>
+        </div>
       </div>
-      <div className="p-4 sm:p-5 text-xs sm:text-sm leading-6 font-[family-name:var(--font-mono)]">
-        {bioLines.map((line, i) => (
+
+      {/* Editor content with line numbers */}
+      <div className="flex">
+        {/* Line numbers gutter */}
+        <div className="flex flex-col py-4 px-3 bg-[var(--bg)]/50 border-r border-[var(--border)] select-none">
+          {codeLines.map((line) => (
+            <motion.span
+              key={line.num}
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 0.3 } : {}}
+              transition={{ delay: line.num * 0.04 }}
+              className="text-[10px] leading-6 text-[var(--muted)] text-right w-6 block font-[family-name:var(--font-mono)]"
+            >
+              {line.num}
+            </motion.span>
+          ))}
+        </div>
+
+        {/* Code content */}
+        <div className="py-4 px-4 flex-1 min-w-0">
+          {codeLines.map((line) => (
+            <motion.div
+              key={line.num}
+              initial={{ opacity: 0, x: -10 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: line.num * 0.05, duration: 0.3 }}
+              className="text-xs sm:text-sm leading-6 font-[family-name:var(--font-mono)]"
+            >
+              {line.type === 'heading' ? (
+                <span className="text-[var(--pink)] font-semibold">{line.content}</span>
+              ) : line.type === 'highlight' ? (
+                <span className="text-[var(--accent-light)] font-medium">{line.content}</span>
+              ) : line.type === 'blank' ? (
+                <span>&nbsp;</span>
+              ) : (
+                <span className="text-[var(--muted)]">{line.content}</span>
+              )}
+            </motion.div>
+          ))}
+          {/* Blinking cursor */}
           <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ delay: i * 0.06, duration: 0.3 }}
-          >
-            {line.prompt ? (
-              <span>
-                <span className="text-[var(--green)]">mayur</span>
-                <span className="text-[var(--muted)]">@</span>
-                <span className="text-[var(--cyan)]">dev</span>
-                <span className="text-[var(--muted)]">:~$ </span>
-                <span className="text-[var(--text)]">{line.text}</span>
-              </span>
-            ) : (
-              <span className="text-[var(--muted)]">
-                {line.text.split('**').map((part, j) =>
-                  j % 2 === 1 ? (
-                    <span key={j} className="text-[var(--accent)] font-semibold">{part}</span>
-                  ) : (
-                    <span key={j}>{part}</span>
-                  )
-                )}
-              </span>
-            )}
-          </motion.div>
-        ))}
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: [0, 1, 0] } : {}}
+            transition={{ delay: 1, duration: 1, repeat: Infinity }}
+            className="w-2 h-4 bg-[var(--accent)] rounded-sm mt-1"
+          />
+        </div>
+
+        {/* Minimap column */}
+        <div className="hidden sm:block w-12 py-4 px-2 border-l border-[var(--border)] bg-[var(--bg)]/30">
+          {codeLines.map((line) => (
+            <div
+              key={line.num}
+              className="h-1.5 mb-0.5 rounded-full"
+              style={{
+                width: line.type === 'blank' ? '0' : `${Math.min(100, (line.content?.length || 0) * 3)}%`,
+                background: line.type === 'heading'
+                  ? 'var(--pink)'
+                  : line.type === 'highlight'
+                  ? 'var(--accent)'
+                  : 'var(--muted)',
+                opacity: line.type === 'blank' ? 0 : 0.15,
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -135,10 +179,10 @@ const stagger = {
 };
 
 const stats = [
-  { value: "3", suffix: "rd Year", label: "BCA Student", icon: "🎓" },
-  { value: "1", suffix: "+", label: "Live Projects", icon: "🚀" },
-  { value: "3", suffix: "", label: "Focus Areas", icon: "🎯" },
-  { value: "∞", suffix: "", label: "Always Learning", icon: "💡" },
+  { value: "3", suffix: "rd Year", label: "BCA Student", icon: "🎓", color: "var(--accent-light)" },
+  { value: "1", suffix: "+", label: "Live Projects", icon: "🚀", color: "var(--cyan)" },
+  { value: "3", suffix: "", label: "Focus Areas", icon: "🎯", color: "var(--green)" },
+  { value: "∞", suffix: "", label: "Always Learning", icon: "💡", color: "var(--gold)" },
 ];
 
 export default function About() {
@@ -157,12 +201,12 @@ export default function About() {
           initial="hidden"
           animate={inView ? "show" : "hidden"}
         >
-          {/* Left column — Terminal Bio */}
+          {/* Left column — Code Editor Bio */}
           <div>
             <motion.div variants={fadeUp} className="flex items-center gap-2 mb-3">
               <Terminal size={14} className="text-[var(--cyan)]" />
               <p className="font-[family-name:var(--font-mono)] text-xs text-[var(--cyan)] uppercase tracking-widest">
-                {"//"} about_me
+                {"//"}  about_me
               </p>
             </motion.div>
             <motion.h2
@@ -171,14 +215,25 @@ export default function About() {
             >
               Building the backend.
               <br />
-              <span className="bg-gradient-to-r from-[var(--accent)] via-[var(--cyan)] to-[var(--pink)] bg-clip-text text-transparent">
+              <span className="aurora-text">
                 Learning the pipeline.
               </span>
             </motion.h2>
 
-            {/* Terminal */}
+            {/* Code Editor */}
             <motion.div variants={fadeUp} className="mb-8">
-              <TerminalBio />
+              <CodeEditorBio />
+            </motion.div>
+
+            {/* Status + CTA */}
+            <motion.div variants={fadeUp} className="flex items-center gap-3 mb-6">
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full holo-badge border border-[var(--green)]/20 text-[var(--green)] text-[10px] font-[family-name:var(--font-mono)] font-medium">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--green)] opacity-75 animate-ping" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--green)]" />
+                </span>
+                Open to Opportunities
+              </span>
             </motion.div>
 
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
@@ -186,24 +241,28 @@ export default function About() {
                 href="https://github.com/Mayur-1976"
                 target="_blank"
                 rel="noopener noreferrer"
-                whileHover={{ scale: 1.04, boxShadow: "0 0 25px rgba(131,110,249,0.25)" }}
+                whileHover={{ scale: 1.04, boxShadow: "0 0 30px rgba(124,58,237,0.2)" }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[#6c5ce7] text-white text-sm font-semibold btn-glow transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-semibold btn-glow transition-all gradient-flow"
+                style={{
+                  background: "linear-gradient(135deg, var(--aurora1), #6c5ce7, var(--aurora2))",
+                  backgroundSize: "200% 200%",
+                }}
               >
                 <GithubIcon width={16} height={16} /> View GitHub ↗
               </motion.a>
               <motion.a
                 href="mailto:mayursuthar1976@gmail.com"
-                whileHover={{ scale: 1.04, borderColor: "rgba(131,110,249,0.5)" }}
+                whileHover={{ scale: 1.04, borderColor: "rgba(124,58,237,0.4)" }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[var(--border)] text-[var(--text)] text-sm font-semibold hover:text-[var(--accent)] transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[var(--border)] text-[var(--text)] text-sm font-semibold hover:text-[var(--accent-light)] transition-all backdrop-blur-sm bg-[var(--surface)]/30"
               >
                 <Mail size={16} /> Send Email
               </motion.a>
             </motion.div>
           </div>
 
-          {/* Right column — Stat cards */}
+          {/* Right column — Bento Grid Stats */}
           <motion.div className="grid grid-cols-2 gap-4" variants={stagger}>
             {stats.map((stat, i) => (
               <motion.div
@@ -211,16 +270,29 @@ export default function About() {
                 variants={fadeUp}
                 whileHover={{
                   y: -8,
-                  borderColor: "rgba(131,110,249,0.4)",
-                  boxShadow: "0 20px 40px rgba(131,110,249,0.08)",
+                  borderColor: "rgba(124,58,237,0.3)",
                 }}
-                className="glass-card p-6 text-center group transition-all duration-300 relative overflow-hidden"
+                className="glass-card p-6 text-center group transition-all duration-500 relative overflow-hidden card-hover-glow"
               >
-                {/* Background glow on hover */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                {/* Aurora corner glow */}
+                <div
+                  className="absolute -top-8 -right-8 w-24 h-24 rounded-full blur-[40px] opacity-0 group-hover:opacity-[0.12] transition-opacity duration-700"
+                  style={{ background: stat.color }}
+                />
+                {/* Bottom border accent */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: `linear-gradient(90deg, transparent, ${stat.color}, transparent)`,
+                  }}
+                />
+
                 <div className="relative z-10">
-                  <span className="text-2xl mb-2 block">{stat.icon}</span>
-                  <p className="font-[family-name:var(--font-syne)] font-extrabold text-3xl sm:text-4xl text-[var(--accent)] mb-1 counter-glow">
+                  <span className="text-2xl mb-3 block">{stat.icon}</span>
+                  <p
+                    className="font-[family-name:var(--font-syne)] font-extrabold text-3xl sm:text-4xl mb-1 counter-glow"
+                    style={{ color: stat.color }}
+                  >
                     <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                   </p>
                   <p className="text-[var(--muted)] text-sm">{stat.label}</p>

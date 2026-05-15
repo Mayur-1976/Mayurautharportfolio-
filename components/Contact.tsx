@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Mail, Send, MessageSquare } from "lucide-react";
+import { Mail, Send, MessageSquare, Sparkles } from "lucide-react";
 import { SVGProps } from "react";
 
 function GithubIcon(props: SVGProps<SVGSVGElement>) {
@@ -44,8 +44,9 @@ export default function Contact() {
       {/* Section divider */}
       <div className="section-divider mb-24" />
 
-      {/* Background accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[var(--accent)] opacity-[0.02] blur-[120px] pointer-events-none" />
+      {/* Aurora background accents */}
+      <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-[var(--aurora1)] opacity-[0.02] blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-[var(--aurora2)] opacity-[0.02] blur-[100px] pointer-events-none" />
 
       <div className="max-w-2xl mx-auto px-6">
         <motion.div
@@ -58,7 +59,7 @@ export default function Contact() {
           <motion.div variants={fadeUp} className="flex items-center justify-center gap-2 mb-3">
             <MessageSquare size={14} className="text-[var(--cyan)]" />
             <p className="font-[family-name:var(--font-mono)] text-xs text-[var(--cyan)] uppercase tracking-widest">
-              {"//"} contact
+              {"//"}  contact
             </p>
           </motion.div>
 
@@ -68,7 +69,7 @@ export default function Contact() {
             className="font-[family-name:var(--font-syne)] font-extrabold text-3xl sm:text-4xl md:text-5xl mb-4"
           >
             Let&apos;s Build{" "}
-            <span className="bg-gradient-to-r from-[var(--accent)] via-[var(--cyan)] to-[var(--pink)] bg-clip-text text-transparent">
+            <span className="aurora-text">
               Something Together
             </span>
           </motion.h2>
@@ -89,9 +90,13 @@ export default function Contact() {
           >
             <motion.a
               href="mailto:mayursuthar1976@gmail.com"
-              whileHover={{ scale: 1.04, boxShadow: "0 0 25px rgba(131,110,249,0.25)" }}
+              whileHover={{ scale: 1.04, boxShadow: "0 0 30px rgba(124,58,237,0.25), 0 0 60px rgba(6,182,212,0.08)" }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[#6c5ce7] text-white text-sm font-semibold btn-glow transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-semibold btn-glow transition-all gradient-flow"
+              style={{
+                background: "linear-gradient(135deg, var(--aurora1), #6c5ce7, var(--aurora2))",
+                backgroundSize: "200% 200%",
+              }}
             >
               <Mail size={16} /> Email Me
             </motion.a>
@@ -99,31 +104,48 @@ export default function Contact() {
               href="https://github.com/Mayur-1976"
               target="_blank"
               rel="noopener noreferrer"
-              whileHover={{ scale: 1.04, borderColor: "rgba(131,110,249,0.5)" }}
+              whileHover={{ scale: 1.04, borderColor: "rgba(124,58,237,0.4)" }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[var(--border)] text-[var(--text)] text-sm font-semibold hover:text-[var(--accent)] transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-[var(--border)] text-[var(--text)] text-sm font-semibold hover:text-[var(--accent-light)] transition-all backdrop-blur-sm bg-[var(--surface)]/30"
             >
               <GithubIcon width={16} height={16} /> GitHub
             </motion.a>
           </motion.div>
 
-          {/* Contact Form — Glass Card */}
-          <motion.div variants={fadeUp} className="glass-card p-6 sm:p-8 text-left">
+          {/* Contact Form — Aurora Glass Card */}
+          <motion.div variants={fadeUp} className="glass-card p-6 sm:p-8 text-left relative overflow-hidden">
+            {/* Subtle constellation background */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {[...Array(8)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-1 h-1 rounded-full bg-[var(--accent-light)]"
+                  style={{
+                    left: `${10 + Math.random() * 80}%`,
+                    top: `${10 + Math.random() * 80}%`,
+                    opacity: 0.06 + Math.random() * 0.06,
+                    animation: `twinkle ${2 + Math.random() * 3}s ease-in-out infinite`,
+                    animationDelay: `${Math.random() * 3}s`,
+                  }}
+                />
+              ))}
+            </div>
+
             <form
               action="https://formsubmit.co/mayursuthar1976@gmail.com"
               method="POST"
               onSubmit={handleSubmit}
-              className="space-y-5"
+              className="space-y-5 relative z-10"
             >
               <input type="hidden" name="_captcha" value="false" />
               <input type="hidden" name="_subject" value="Portfolio Contact — New Message!" />
               <input type="hidden" name="_template" value="table" />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="relative">
+                <div className="relative group">
                   <label
-                    className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${focusedField === "name"
-                        ? "-top-2.5 text-[var(--accent)] bg-[var(--bg2)] px-1"
+                    className={`absolute left-4 transition-all duration-300 pointer-events-none font-[family-name:var(--font-mono)] text-xs z-10 ${focusedField === "name"
+                        ? "-top-2.5 text-[var(--accent-light)] bg-[var(--bg2)] px-1.5 rounded"
                         : "top-3.5 text-[var(--muted)]"
                       }`}
                   >
@@ -133,15 +155,17 @@ export default function Contact() {
                     type="text"
                     name="name"
                     required
-                    className="form-input pt-3"
+                    className={`form-input pt-3 transition-all duration-300 ${
+                      focusedField === "name" ? "border-[var(--accent)]" : ""
+                    }`}
                     onFocus={() => setFocusedField("name")}
                     onBlur={(e) => { if (!e.target.value) setFocusedField(null); }}
                   />
                 </div>
-                <div className="relative">
+                <div className="relative group">
                   <label
-                    className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${focusedField === "email"
-                        ? "-top-2.5 text-[var(--accent)] bg-[var(--bg2)] px-1"
+                    className={`absolute left-4 transition-all duration-300 pointer-events-none font-[family-name:var(--font-mono)] text-xs z-10 ${focusedField === "email"
+                        ? "-top-2.5 text-[var(--accent-light)] bg-[var(--bg2)] px-1.5 rounded"
                         : "top-3.5 text-[var(--muted)]"
                       }`}
                   >
@@ -151,17 +175,19 @@ export default function Contact() {
                     type="email"
                     name="email"
                     required
-                    className="form-input pt-3"
+                    className={`form-input pt-3 transition-all duration-300 ${
+                      focusedField === "email" ? "border-[var(--accent)]" : ""
+                    }`}
                     onFocus={() => setFocusedField("email")}
                     onBlur={(e) => { if (!e.target.value) setFocusedField(null); }}
                   />
                 </div>
               </div>
 
-              <div className="relative">
+              <div className="relative group">
                 <label
-                  className={`absolute left-4 transition-all duration-200 pointer-events-none font-[family-name:var(--font-mono)] text-xs ${focusedField === "message"
-                      ? "-top-2.5 text-[var(--accent)] bg-[var(--bg2)] px-1 z-10"
+                  className={`absolute left-4 transition-all duration-300 pointer-events-none font-[family-name:var(--font-mono)] text-xs z-10 ${focusedField === "message"
+                      ? "-top-2.5 text-[var(--accent-light)] bg-[var(--bg2)] px-1.5 rounded"
                       : "top-3.5 text-[var(--muted)]"
                     }`}
                 >
@@ -171,7 +197,9 @@ export default function Contact() {
                   name="message"
                   rows={5}
                   required
-                  className="form-input resize-none pt-5"
+                  className={`form-input resize-none pt-5 transition-all duration-300 ${
+                    focusedField === "message" ? "border-[var(--accent)]" : ""
+                  }`}
                   onFocus={() => setFocusedField("message")}
                   onBlur={(e) => { if (!e.target.value) setFocusedField(null); }}
                 />
@@ -179,9 +207,13 @@ export default function Contact() {
 
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02, boxShadow: "0 0 30px rgba(131,110,249,0.2)" }}
+                whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(124,58,237,0.2), 0 0 80px rgba(6,182,212,0.06)" }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[#6c5ce7] text-white font-semibold text-sm btn-glow transition-all inline-flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl text-white font-semibold text-sm btn-glow transition-all inline-flex items-center justify-center gap-2 gradient-flow"
+                style={{
+                  background: "linear-gradient(135deg, var(--aurora1), #6c5ce7, var(--aurora2))",
+                  backgroundSize: "200% 200%",
+                }}
               >
                 <Send size={15} /> Send Message
               </motion.button>
@@ -190,13 +222,14 @@ export default function Contact() {
         </motion.div>
       </div>
 
-      {/* Toast notification */}
+      {/* Toast notification — Aurora styled */}
       {toast.show && (
         <div
-          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl glass-card border-[var(--accent)]/30 text-sm text-[var(--text)] shadow-xl shadow-[var(--accent)]/10 inline-flex items-center gap-2 ${toast.exiting ? "toast-exit" : "toast-enter"
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl glass-card border-[var(--accent)]/20 text-sm text-[var(--text)] shadow-xl shadow-[var(--accent)]/10 inline-flex items-center gap-2 ${toast.exiting ? "toast-exit" : "toast-enter"
             }`}
         >
-          <span className="text-lg">✨</span> Message sent! I&apos;ll get back to you soon.
+          <Sparkles size={14} className="text-[var(--accent-light)]" />
+          Message sent! I&apos;ll get back to you soon.
         </div>
       )}
     </section>

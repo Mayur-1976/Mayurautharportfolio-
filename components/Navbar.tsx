@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sparkles } from "lucide-react";
 
 const navLinks = [
   { label: "About", href: "#about" },
@@ -15,6 +15,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
+  const navRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -40,6 +42,20 @@ export default function Navbar() {
     return () => observer.disconnect();
   }, []);
 
+  // Update sliding indicator position
+  useEffect(() => {
+    if (!navRef.current || !activeSection) return;
+    const activeLink = navRef.current.querySelector(`a[href="${activeSection}"]`) as HTMLElement;
+    if (activeLink) {
+      const navRect = navRef.current.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+      setIndicatorStyle({
+        left: linkRect.left - navRect.left - 10,
+        width: linkRect.width + 20,
+      });
+    }
+  }, [activeSection]);
+
   // Lock body scroll when mobile menu is open
   useEffect(() => {
     if (mobileOpen) {
@@ -51,39 +67,55 @@ export default function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <header
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-[rgba(6,6,10,0.9)] backdrop-blur-xl border-b border-[rgba(255,255,255,0.07)]"
-          : "bg-transparent"
-      }`}
-    >
+    <header className="fixed top-0 left-0 w-full z-50 transition-all duration-500">
       <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <a
+        <motion.a
           href="#"
-          className="font-[family-name:var(--font-mono)] text-sm text-[var(--accent)] hover:text-white transition-colors"
+          className="font-[family-name:var(--font-mono)] text-sm text-[var(--accent-light)] hover:text-white transition-colors relative group"
+          whileHover={{ scale: 1.05 }}
         >
-          <span className="text-[var(--muted)]">&gt;</span> mayur.dev
-        </a>
+          <span className="text-[var(--muted)]">&gt;</span> mayur
+          <span className="text-[var(--cyan)]">.dev</span>
+          <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-gradient-to-r from-[var(--aurora1)] to-[var(--aurora2)] group-hover:w-full transition-all duration-300" />
+        </motion.a>
 
-        {/* Desktop Links */}
-        <ul className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                className={`font-[family-name:var(--font-mono)] text-sm transition-colors ${
-                  activeSection === link.href
-                    ? "text-[var(--accent)]"
-                    : "text-[var(--muted)] hover:text-[var(--text)]"
-                }`}
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
+        {/* Desktop Links — Floating Pill */}
+        <div
+          className={`hidden md:flex items-center transition-all duration-500 ${
+            scrolled
+              ? "px-2 py-1.5 rounded-2xl bg-[var(--surface)]/60 backdrop-blur-xl border border-[var(--border)]"
+              : ""
+          }`}
+        >
+          <ul ref={navRef} className="flex items-center gap-1 relative">
+            {/* Sliding active indicator */}
+            {activeSection && (
+              <motion.div
+                className="absolute top-0 h-full rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/15"
+                animate={{
+                  left: indicatorStyle.left,
+                  width: indicatorStyle.width,
+                }}
+                transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              />
+            )}
+            {navLinks.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  className={`relative z-10 px-4 py-2 rounded-xl font-[family-name:var(--font-mono)] text-sm transition-all duration-300 block ${
+                    activeSection === link.href
+                      ? "text-[var(--accent-light)]"
+                      : "text-[var(--muted)] hover:text-[var(--text)]"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         {/* Hamburger */}
         <button
@@ -95,30 +127,52 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Scrolled bottom glow line */}
+      {scrolled && (
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[var(--aurora1)]/15 to-transparent" />
+      )}
+
+      {/* Mobile Menu — Aurora Overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 top-16 bg-[var(--bg)] z-40 flex flex-col items-center justify-center gap-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 top-0 bg-[var(--bg)]/95 backdrop-blur-xl z-40 flex flex-col items-center justify-center gap-8"
           >
-            {navLinks.map((link) => (
-              <a
+            {/* Aurora glow in mobile menu */}
+            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full bg-[var(--aurora1)] opacity-[0.06] blur-[100px] pointer-events-none" />
+
+            {navLinks.map((link, i) => (
+              <motion.a
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`font-[family-name:var(--font-syne)] text-2xl font-bold transition-colors ${
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ delay: i * 0.08, duration: 0.4 }}
+                className={`font-[family-name:var(--font-syne)] text-3xl font-bold transition-colors ${
                   activeSection === link.href
-                    ? "text-[var(--accent)]"
-                    : "text-[var(--text)] hover:text-[var(--accent)]"
+                    ? "aurora-text"
+                    : "text-[var(--text)] hover:text-[var(--accent-light)]"
                 }`}
               >
                 {link.label}
-              </a>
+              </motion.a>
             ))}
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mt-4 flex items-center gap-2 text-[var(--muted)] text-xs font-[family-name:var(--font-mono)]"
+            >
+              <Sparkles size={10} />
+              navigation
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
